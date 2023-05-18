@@ -12,3 +12,4 @@ class State:
         cost = cost + self.incidence
 
         return cost
+    
