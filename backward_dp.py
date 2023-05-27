@@ -3,7 +3,7 @@ import random
 
 class Backwards_DP:
     def __init__(self,actions):
-        self.steps = 8
+        self.steps = 9
         self.actions = actions
         self.states = []
         self.create_states()
@@ -12,8 +12,9 @@ class Backwards_DP:
         
 
     def create_states(self):
-        #TODO check if we need 8 or 9 timesteps
-        #TODO check if we have to add incidence and treminal cost 
+        #TODO In der Aufgabenstellung steht "acht Wochen vor der Wahl" ==> 8 oder 9 Zeitschritten inklusive des Terminalzustandes
+        #TODO In der Aufgabenstellung steht "Kosten linear in Höhe des Inzidenzwertes ... zudem Terminalkosten in höhe von 800 an"
+        #TODO werden die Terminlalkosten aus Inzidenz + 800 "Kosten" errechnet (Zeile 24)
         for timesteps in range(self.steps): 
             self.states.append([])
             for incidence in range(501):
@@ -29,12 +30,11 @@ class Backwards_DP:
         
     
     def calc_expected_cost(self):
-        for timestep in range(1,8):
+        for timestep in range(1,self.steps):
 
             for incidence in range(501): 
                 for popularity in range(101):
                     
-                    #TODO check if we can ignore states with 0 prob multiplication
                     min_action_cost = None
                     for action in self.actions:
                         succ_set = []
@@ -79,7 +79,10 @@ class Backwards_DP:
             v_timestep, best_action = self.select_best_action(current_state,timestep)
             v_stern.append(v_timestep)
             pi_stern.append(best_action)
-            ##TODO How to implement the stochasicity after selecting an action
+
+            #TODO Wie soll das Zufallsexperiment nach der Aktionsauswahl abgebildet werden?
+            #TODO Aktuell wird ein random Integer aus dem Intervall 0-3 ausgewält
+            #TODO (Da es sich um ein diskretes Intervall handelt ist die Wsk identisch)  
             rnd = random.randint(0,3)
             current_state[0]  =  current_state[0] + best_action.costs[rnd][0]
             current_state[1]  =  current_state[1] + best_action.costs[rnd][1]
