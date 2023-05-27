@@ -82,7 +82,7 @@ class Backwards_DP:
 
             #TODO Wie soll das Zufallsexperiment nach der Aktionsauswahl abgebildet werden?
             #TODO Aktuell wird ein random Integer aus dem Intervall 0-3 ausgewält
-            #TODO (Da es sich um ein diskretes Intervall handelt ist die Wsk identisch)  
+            #TODO (Da es sich um ein diskretes Intervall handelt ist die Wsk. identisch)  
             rnd = random.randint(0,3)
             current_state[0]  =  current_state[0] + best_action.costs[rnd][0]
             current_state[1]  =  current_state[1] + best_action.costs[rnd][1]
