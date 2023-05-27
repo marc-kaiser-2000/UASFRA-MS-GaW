@@ -37,3 +37,28 @@ actions = [
 
 alg = Backwards_DP(actions)
 
+#V* Liste mit den erwarteten Kosten
+#Pi* Liste, welche die besten Aktionen enthält
+V_stern, pi_stern = alg.select_best_strategie([100,50])
+
+print("Optimale erwartete Kosten V*: ")
+for v in V_stern: 
+    print(str(v) + str(", "))
+
+print("Optimale Strategie: ")
+for best_action in pi_stern:
+    best_action.print()
+
+print("Finish Run 1")
+
+V_stern, pi_stern = alg.select_best_strategie([100,60])
+
+print("Optimale erwartete Kosten V*: ")
+for v in V_stern: 
+    print(str(v) + str(", "))
+
+print("Optimale Strategie: ")
+for best_action in pi_stern:
+    best_action.print()
+
+print("Finish Run 2")

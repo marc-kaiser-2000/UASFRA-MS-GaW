@@ -5,3 +5,7 @@ class Action:
         self.costs = costs
         self.p = 0.25
 
+    def print(self):
+        print("ID: "+ str(self.id) + " Name: "+ self.name + ", ")
+
+
