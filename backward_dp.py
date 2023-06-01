@@ -1,4 +1,3 @@
-from state import *
 import random
 
 class Backwards_DP:
