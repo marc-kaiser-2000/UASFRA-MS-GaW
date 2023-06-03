@@ -1,4 +1,6 @@
 import random
+import state
+import matplotlib.pyplot as plt
 
 class Backwards_DP:
     def __init__(self,actions):
@@ -11,20 +13,17 @@ class Backwards_DP:
         
 
     def create_states(self):
-        #TODO In der Aufgabenstellung steht "acht Wochen vor der Wahl" ==> 8 oder 9 Zeitschritten inklusive des Terminalzustandes
-        #TODO In der Aufgabenstellung steht "Kosten linear in Höhe des Inzidenzwertes ... zudem Terminalkosten in höhe von 800 an"
-        #TODO werden die Terminlalkosten aus Inzidenz + 800 "Kosten" errechnet (Zeile 24)
         for timesteps in range(self.steps): 
             self.states.append([])
             for incidence in range(501):
                 self.states[timesteps].append([])
                 for popularity in range(101):
                     if timesteps == 0 and popularity < 50 :
-                        self.states[timesteps][incidence].append(800 + incidence)
+                        self.states[timesteps][incidence].append(state.State(800 + incidence))
                     elif timesteps == 0:
-                        self.states[timesteps][incidence].append(incidence)
+                        self.states[timesteps][incidence].append(state.State(incidence))
                     else:
-                        self.states[timesteps][incidence].append(0)
+                        self.states[timesteps][incidence].append(state.State(0))
 
         
     
@@ -62,12 +61,15 @@ class Backwards_DP:
                         for succ in succ_set:
 
                             #current_cost += action.p * self.states[0][50][101]
-                            current_cost += action.p * self.states[timestep-1][succ[0]][succ[1]]
+                            current_cost += action.p * self.states[timestep-1][succ[0]][succ[1]].expected_value
                         
                         if min_action_cost == None or current_cost < min_action_cost:
+                            best_action = action
                             min_action_cost = current_cost
 
-                    self.states[timestep][incidence][popularity] = min_action_cost
+                    self.states[timestep][incidence][popularity].expected_value = min_action_cost
+                    self.states[timestep][incidence][popularity].best_action = best_action
+
         
     def select_best_strategie(self,start_state):
         v_stern = []
@@ -126,3 +128,22 @@ class Backwards_DP:
 
         return min_action_cost, best_action
 
+    def plot(self) -> None:
+        for timestep in range(self.steps-1):
+            print("Plotting Step: " + str(self.steps-timestep-1))
+            fig, ax = plt.subplots()
+            ax.set_xlabel('Incidence')
+            ax.set_ylabel('Popularity')
+            ax.set_title('Best action at T: '+ str(self.steps-timestep-1))
+            ax.set_xlim(0,501)
+            ax.set_ylim(0,101)
+            for incidence in range(501): 
+                for popularity in range(101):
+                    x = [incidence, incidence, incidence+1, incidence+1]
+                    y = [popularity, popularity + 1, popularity + 1,popularity]
+
+
+                    ax.fill(x, y,self.states[self.steps-timestep-1][incidence][popularity].best_action.color)
+                    
+            
+        plt.show()
