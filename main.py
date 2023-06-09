@@ -35,8 +35,13 @@ actions = [
 ]
 
 alg = Backwards_DP(actions)
-alg.plot()
+#fc0303 #0cad24
+#test = alg.get_color_gradient("#fc0303","#0cad24",1300)
+#print(test)
 
+
+alg.plot()
+print("Test")
 # V* Liste mit den erwarteten Kosten
 # Pi* Liste, welche die besten Aktionen enthält
 

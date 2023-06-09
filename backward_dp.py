@@ -1,6 +1,9 @@
 import random
 import state
 import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
+import matplotlib.colors as mcolors
+import numpy as np
 
 class Backwards_DP:
     def __init__(self,actions):
@@ -127,14 +130,15 @@ class Backwards_DP:
                     best_action = action
 
         return min_action_cost, best_action
-
+    
     def plot(self) -> None:
+        """
         for timestep in range(self.steps-1):
-            print("Plotting Step: " + str(self.steps-timestep-1))
+            print("Plotting Step: " + str(timestep))
             fig, ax = plt.subplots()
             ax.set_xlabel('Incidence')
             ax.set_ylabel('Popularity')
-            ax.set_title('Best action at T: '+ str(self.steps-timestep-1))
+            ax.set_title('Best action at T: '+ str(timestep))
             ax.set_xlim(0,501)
             ax.set_ylim(0,101)
             for incidence in range(501): 
@@ -144,6 +148,55 @@ class Backwards_DP:
 
 
                     ax.fill(x, y,self.states[self.steps-timestep-1][incidence][popularity].best_action.color)
-                    
-            
+            first_patch = mpatches.Patch(color=self.actions[0].color, label=self.actions[0].name)
+            second_patch = mpatches.Patch(color=self.actions[1].color, label=self.actions[1].name)
+            third_path = mpatches.Patch(color=self.actions[2].color, label=self.actions[2].name)
+            forth_patch = mpatches.Patch(color=self.actions[3].color, label=self.actions[3].name)
+            plt.legend(handles=[first_patch, second_patch, third_path, forth_patch],loc="upper right")
+
+            fig.savefig(".\\Results\\Figure_"+str(timestep)+".png")
+        """
+        
+                 
+        print("Plotting Step: " + str(self.steps-1))
+        fig, ax = plt.subplots()
+        ax.set_xlabel('Incidence')
+        ax.set_ylabel('Popularity')
+        ax.set_title('Terminal Cost at T: '+ str(self.steps-1))
+        ax.set_xlim(0,501)
+        ax.set_ylim(0,101)
+        color_gradient = self.get_color_gradient("#0cad24","#fc0303",1301)
+        for incidence in range(501): 
+            for popularity in range(101):
+                x = [incidence, incidence, incidence+1, incidence+1]
+                y = [popularity, popularity + 1, popularity + 1,popularity]
+
+                
+                ax.fill(x, y,color_gradient[round(self.states[0][incidence][popularity].expected_value)])
+
+        first_patch = mpatches.Patch(color="#0cad24", label="Terminal Cost of 0")
+        second_patch = mpatches.Patch(color="#fc0303", label="Terminal Cost of 1300")
+
+        plt.legend(handles=[first_patch, second_patch],loc="upper right")
+        
+        #cm = mcolors.LinearSegmentedColormap.from_list(name="TerminalCostMap",colors=color_gradient,N=1300)  
+        #fig.colorbar(cm,ax=ax)
+        fig.savefig(".\\Results\\Figure_"+str(self.steps-1)+".png")
         plt.show()
+
+    def hex_to_RGB(self,hex_str):
+        """ #FFFFFF -> [255,255,255]"""
+        #Pass 16 to the integer function for change of base
+        return [int(hex_str[i:i+2], 16) for i in range(1,6,2)]
+
+    def get_color_gradient(self,c1, c2, n):
+        """
+        Given two hex colors, returns a color gradient
+        with n colors.
+        """
+        assert n > 1
+        c1_rgb = np.array(self.hex_to_RGB(c1))/255
+        c2_rgb = np.array(self.hex_to_RGB(c2))/255
+        mix_pcts = [x/(n-1) for x in range(n)]
+        rgb_colors = [((1-mix)*c1_rgb + (mix*c2_rgb)) for mix in mix_pcts]
+        return ["#" + "".join([format(int(round(val*255)), "02x") for val in item]) for item in rgb_colors]
