@@ -41,7 +41,6 @@ alg = Backwards_DP(actions)
 
 
 alg.plot()
-print("Test")
 # V* Liste mit den erwarteten Kosten
 # Pi* Liste, welche die besten Aktionen enthält
 
