@@ -39,12 +39,14 @@ alg = Backwards_DP(actions)
 #test = alg.get_color_gradient("#fc0303","#0cad24",1300)
 #print(test)
 
-alg.calc_successors([100, 50])
+alg.calc_successors([100, 60])
 
 alg.plot()
 # V* Liste mit den erwarteten Kosten
 # Pi* Liste, welche die besten Aktionen enthält
+#alg.calc_successors([100, 60])
 
+#alg.plot()
 
 
 
