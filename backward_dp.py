@@ -166,7 +166,7 @@ class Backwards_DP:
         total_states = 0
         for state in self.succ_states[-1]:
             total_states += 1 
-            if state.popularity > 50: 
+            if state.popularity >= 50: 
                 reelected_states += 1
         
         self.reelection_prop = reelected_states / total_states
