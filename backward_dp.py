@@ -10,8 +10,10 @@ class Backwards_DP:
         self.steps = 9
         self.actions = actions
         self.states = []
+        self.succ_states = []
         self.create_states()
         self.calc_expected_cost()
+        self.reelection_prop = 0
         #print(self.states)
         
 
@@ -22,11 +24,11 @@ class Backwards_DP:
                 self.states[timesteps].append([])
                 for popularity in range(101):
                     if timesteps == 0 and popularity < 50 :
-                        self.states[timesteps][incidence].append(state.State(800 + incidence))
+                        self.states[timesteps][incidence].append(state.State(800 + incidence,popularity,incidence))
                     elif timesteps == 0:
-                        self.states[timesteps][incidence].append(state.State(incidence))
+                        self.states[timesteps][incidence].append(state.State(incidence,popularity,incidence))
                     else:
-                        self.states[timesteps][incidence].append(state.State(0))
+                        self.states[timesteps][incidence].append(state.State(0,popularity,incidence))
 
         
     
@@ -91,6 +93,7 @@ class Backwards_DP:
             current_state[0]  =  current_state[0] + best_action.costs[rnd][0]
             current_state[1]  =  current_state[1] + best_action.costs[rnd][1]
         return v_stern, pi_stern
+    
 
     def select_best_action(self,state,timestep):
         incidence = state[0]
@@ -131,8 +134,48 @@ class Backwards_DP:
 
         return min_action_cost, best_action
     
+    def calc_successors(self,start)-> None:
+        
+        self.succ_states.append([self.states[self.steps-1][start[0]][start[1]]])
+
+        for timestep in range(self.steps):
+            if timestep != 0:
+                self.succ_states.append([])
+
+                for state in self.succ_states[timestep-1] :
+                    for cost in state.best_action.costs : 
+
+                        if state.incidence + cost[0] > 500:
+                            succ_incidence = 500
+                        elif state.incidence + cost[0] < 0:
+                            succ_incidence = 0
+                        else:
+                            succ_incidence = state.incidence + cost[0] 
+
+                        if state.popularity + cost[1] > 100:
+                            succ_popularity = 100
+                        elif state.popularity + cost[1] < 0:
+                            succ_popularity = 0
+                        else: 
+                            succ_popularity = state.popularity + cost[1]
+
+                        self.succ_states[timestep].append(self.states[self.steps-timestep-1][succ_incidence][succ_popularity])
+
+    def calc_reelection_prop(self) -> None: 
+        reelected_states = 0
+        total_states = 0
+        for state in self.succ_states[-1]:
+            total_states += 1 
+            if state.popularity > 50: 
+                reelected_states += 1
+        
+        self.reelection_prop = reelected_states / total_states
+        print("Reelected States: " + str(reelected_states))
+        print("Total States: " + str(total_states))
+        print("Quotient: " + str(self.reelection_prop))
+    
     def plot(self) -> None:
-        """
+        
         for timestep in range(self.steps-1):
             print("Plotting Step: " + str(timestep))
             fig, ax = plt.subplots()
@@ -147,22 +190,35 @@ class Backwards_DP:
                     y = [popularity, popularity + 1, popularity + 1,popularity]
 
 
-                    ax.fill(x, y,self.states[self.steps-timestep-1][incidence][popularity].best_action.color)
+                    ax.fill(x, y,self.states[self.steps-timestep-1][incidence][popularity].best_action.color,alpha=0.5)
+
+               
+            for visited in self.succ_states[timestep]:
+                x = [visited.incidence,visited.incidence +1]
+                y = [visited.popularity,visited.popularity +1]
+                ax.plot(x,y,"black")
+                x = [visited.incidence,visited.incidence +1]
+                y = [visited.popularity +1,visited.popularity]
+                ax.plot(x,y,"black")
+        
+
+
             first_patch = mpatches.Patch(color=self.actions[0].color, label=self.actions[0].name)
             second_patch = mpatches.Patch(color=self.actions[1].color, label=self.actions[1].name)
             third_path = mpatches.Patch(color=self.actions[2].color, label=self.actions[2].name)
             forth_patch = mpatches.Patch(color=self.actions[3].color, label=self.actions[3].name)
             plt.legend(handles=[first_patch, second_patch, third_path, forth_patch],loc="upper right")
 
-            fig.savefig(".\\Results\\Figure_"+str(timestep)+".png")
-        """
+            fig.savefig(".\\Results\\State_"+str(self.succ_states[0][0].incidence)+"_"+str(self.succ_states[0][0].popularity)+"_Figure_"+str(timestep)+".png")
         
-                 
+        
+        self.calc_reelection_prop()
+
         print("Plotting Step: " + str(self.steps-1))
         fig, ax = plt.subplots()
         ax.set_xlabel('Incidence')
         ax.set_ylabel('Popularity')
-        ax.set_title('Terminal Cost at T: '+ str(self.steps-1))
+        ax.set_title('Terminal Cost at T: '+ str(self.steps-1) + ' ; Reelection Prob: ' + str(self.reelection_prop))
         ax.set_xlim(0,501)
         ax.set_ylim(0,101)
         color_gradient = self.get_color_gradient("#0cad24","#fc0303",1301)
@@ -172,7 +228,15 @@ class Backwards_DP:
                 y = [popularity, popularity + 1, popularity + 1,popularity]
 
                 
-                ax.fill(x, y,color_gradient[round(self.states[0][incidence][popularity].expected_value)])
+                ax.fill(x, y,color_gradient[round(self.states[0][incidence][popularity].expected_value)],alpha=0.5)
+
+        for visited in self.succ_states[self.steps-1]:
+            x = [visited.incidence,visited.incidence +1]
+            y = [visited.popularity,visited.popularity +1]
+            ax.plot(x,y,"black")
+            x = [visited.incidence,visited.incidence +1]
+            y = [visited.popularity +1,visited.popularity]
+            ax.plot(x,y,"black")
 
         first_patch = mpatches.Patch(color="#0cad24", label="Terminal Cost of 0")
         second_patch = mpatches.Patch(color="#fc0303", label="Terminal Cost of 1300")
@@ -181,7 +245,7 @@ class Backwards_DP:
         
         #cm = mcolors.LinearSegmentedColormap.from_list(name="TerminalCostMap",colors=color_gradient,N=1300)  
         #fig.colorbar(cm,ax=ax)
-        fig.savefig(".\\Results\\Figure_"+str(self.steps-1)+".png")
+        fig.savefig(".\\Results\\State_"+str(self.succ_states[0][0].incidence)+"_"+str(self.succ_states[0][0].popularity)+"_Figure_"+str(self.steps-1)+".png")
         plt.show()
 
     def hex_to_RGB(self,hex_str):

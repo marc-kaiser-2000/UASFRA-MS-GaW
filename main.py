@@ -39,6 +39,7 @@ alg = Backwards_DP(actions)
 #test = alg.get_color_gradient("#fc0303","#0cad24",1300)
 #print(test)
 
+alg.calc_successors([100, 50])
 
 alg.plot()
 # V* Liste mit den erwarteten Kosten
@@ -78,7 +79,13 @@ fig, ax = plt.subplots()
 x = [0, 0, 1, 1]
 y = [0, 1, 1, 0]
 
-ax.fill(x, y, "b")
+ax.fill(x, y, "b",alpha=0.5)
+x = [0,1]
+y = [0,1]
+ax.plot(x,y,"black")
+x = [0,1]
+y = [1,0]
+ax.plot(x,y,"black")
 
 x = [1, 1, 2, 2]
 y = [0, 1, 1, 0]
