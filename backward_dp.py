@@ -174,7 +174,7 @@ class Backwards_DP:
         print("Total States: " + str(total_states))
         print("Quotient: " + str(self.reelection_prop))
     
-    def plot(self) -> None:
+    def plot_bestaction(self) -> None:
         
         for timestep in range(self.steps-1):
             print("Plotting Step: " + str(timestep))
@@ -209,10 +209,14 @@ class Backwards_DP:
             forth_patch = mpatches.Patch(color=self.actions[3].color, label=self.actions[3].name)
             plt.legend(handles=[first_patch, second_patch, third_path, forth_patch],loc="upper right")
 
-            fig.savefig(".\\Results\\State_"+str(self.succ_states[0][0].incidence)+"_"+str(self.succ_states[0][0].popularity)+"_Figure_"+str(timestep)+".png")
+            fig.savefig(".\\Results\\State_"+str(self.succ_states[0][0].incidence)+"_"+str(self.succ_states[0][0].popularity)+"_Figure_"+str(timestep)+"_Best_Action.png")
         
         
+        
+    
+    def plot_vpistar(self) -> None:
         self.calc_reelection_prop()
+       
 
         print("Plotting Step: " + str(self.steps-1))
         fig, ax = plt.subplots()
@@ -228,7 +232,8 @@ class Backwards_DP:
                 y = [popularity, popularity + 1, popularity + 1,popularity]
 
                 
-                ax.fill(x, y,color_gradient[round(self.states[0][incidence][popularity].expected_value)],alpha=0.5)
+                #ax.fill(x, y,color_gradient[round(self.states[0][incidence][popularity].expected_value)],alpha=0.5)
+                ax.fill(x, y,color_gradient[round(self.states[0][incidence][popularity].expected_value)])
 
         for visited in self.succ_states[self.steps-1]:
             x = [visited.incidence,visited.incidence +1]
@@ -245,8 +250,33 @@ class Backwards_DP:
         
         #cm = mcolors.LinearSegmentedColormap.from_list(name="TerminalCostMap",colors=color_gradient,N=1300)  
         #fig.colorbar(cm,ax=ax)
-        fig.savefig(".\\Results\\State_"+str(self.succ_states[0][0].incidence)+"_"+str(self.succ_states[0][0].popularity)+"_Figure_"+str(self.steps-1)+".png")
-        plt.show()
+        fig.savefig(".\\Results\\State_"+str(self.succ_states[0][0].incidence)+"_"+str(self.succ_states[0][0].popularity)+"_Figure_"+str(self.steps-1)+"_Expected_Cost.png")
+        
+        for timestep in range(self.steps-1):
+            print("Plotting Step: " + str(timestep))
+            fig, ax = plt.subplots()
+            ax.set_xlabel('Incidence')
+            ax.set_ylabel('Popularity')
+            ax.set_title('Expected Cost for PI* at T: '+ str(timestep))
+            ax.set_xlim(0,501)
+            ax.set_ylim(0,101)
+            for incidence in range(501): 
+                for popularity in range(101):
+                    x = [incidence, incidence, incidence+1, incidence+1]
+                    y = [popularity, popularity + 1, popularity + 1,popularity]
+                    #ax.fill(x, y,color_gradient[round(self.states[self.steps-timestep-1][incidence][popularity].expected_value)],alpha=0.5)
+                    ax.fill(x, y,color_gradient[round(self.states[self.steps-timestep-1][incidence][popularity].expected_value)])
+
+            for visited in self.succ_states[timestep]:
+                x = [visited.incidence,visited.incidence +1]
+                y = [visited.popularity,visited.popularity +1]
+                ax.plot(x,y,"black")
+                x = [visited.incidence,visited.incidence +1]
+                y = [visited.popularity +1,visited.popularity]
+                ax.plot(x,y,"black")
+
+            fig.savefig(".\\Results\\State_"+str(self.succ_states[0][0].incidence)+"_"+str(self.succ_states[0][0].popularity)+"_Figure_"+str(timestep)+"_Expected_Cost.png")
+        
 
     def hex_to_RGB(self,hex_str):
         """ #FFFFFF -> [255,255,255]"""

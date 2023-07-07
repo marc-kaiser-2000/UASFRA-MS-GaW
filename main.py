@@ -41,7 +41,8 @@ alg = Backwards_DP(actions)
 
 alg.calc_successors([100, 60])
 
-alg.plot()
+alg.plot_bestaction()
+alg.plot_vpistar()
 # V* Liste mit den erwarteten Kosten
 # Pi* Liste, welche die besten Aktionen enthält
 #alg.calc_successors([100, 60])
