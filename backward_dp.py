@@ -66,8 +66,10 @@ class Backwards_DP:
                         for succ in succ_set:
 
                             #current_cost += action.p * self.states[0][50][101]
-                            current_cost += action.p * self.states[timestep-1][succ[0]][succ[1]].expected_value
-                        
+                            #current_cost += action.p * self.states[timestep-1][succ[0]][succ[1]].expected_value
+                            #Changed
+                            current_cost += action.p * (succ[0]+self.states[timestep-1][succ[0]][succ[1]].expected_value)
+
                         if min_action_cost == None or current_cost < min_action_cost:
                             best_action = action
                             min_action_cost = current_cost
@@ -233,7 +235,13 @@ class Backwards_DP:
 
                 
                 #ax.fill(x, y,color_gradient[round(self.states[0][incidence][popularity].expected_value)],alpha=0.5)
-                ax.fill(x, y,color_gradient[round(self.states[0][incidence][popularity].expected_value)])
+                #ax.fill(x, y,color_gradient[round(self.states[0][incidence][popularity].expected_value)])
+                #Changed
+                expected_value = round(self.states[0][incidence][popularity].expected_value)
+                if expected_value > 1300:
+                    expected_value = 1300
+                ax.fill(x, y,color_gradient[expected_value])
+
 
         for visited in self.succ_states[self.steps-1]:
             x = [visited.incidence,visited.incidence +1]
@@ -265,7 +273,11 @@ class Backwards_DP:
                     x = [incidence, incidence, incidence+1, incidence+1]
                     y = [popularity, popularity + 1, popularity + 1,popularity]
                     #ax.fill(x, y,color_gradient[round(self.states[self.steps-timestep-1][incidence][popularity].expected_value)],alpha=0.5)
-                    ax.fill(x, y,color_gradient[round(self.states[self.steps-timestep-1][incidence][popularity].expected_value)])
+                    #ax.fill(x, y,color_gradient[round(self.states[self.steps-timestep-1][incidence][popularity].expected_value)])
+                    expected_value = round(self.states[self.steps-timestep-1][incidence][popularity].expected_value)
+                    if expected_value > 1300:
+                        expected_value = 1300
+                    ax.fill(x, y,color_gradient[expected_value])
 
             for visited in self.succ_states[timestep]:
                 x = [visited.incidence,visited.incidence +1]
