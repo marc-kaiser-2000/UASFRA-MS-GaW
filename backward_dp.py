@@ -68,7 +68,7 @@ class Backwards_DP:
                             #current_cost += action.p * self.states[0][50][101]
                             #current_cost += action.p * self.states[timestep-1][succ[0]][succ[1]].expected_value
                             #Changed
-                            current_cost += action.p * (succ[0]+self.states[timestep-1][succ[0]][succ[1]].expected_value)
+                            current_cost += action.p * (incidence+self.states[timestep-1][succ[0]][succ[1]].expected_value)
 
                         if min_action_cost == None or current_cost < min_action_cost:
                             best_action = action
@@ -77,25 +77,6 @@ class Backwards_DP:
                     self.states[timestep][incidence][popularity].expected_value = min_action_cost
                     self.states[timestep][incidence][popularity].best_action = best_action
 
-        
-    def select_best_strategie(self,start_state):
-        v_stern = []
-        pi_stern = []
-        current_state = start_state
-
-        for timestep in range(self.steps-1):
-            v_timestep, best_action = self.select_best_action(current_state,timestep)
-            v_stern.append(v_timestep)
-            pi_stern.append(best_action)
-
-            #TODO Wie soll das Zufallsexperiment nach der Aktionsauswahl abgebildet werden?
-            #TODO Aktuell wird ein random Integer aus dem Intervall 0-3 ausgewält
-            #TODO (Da es sich um ein diskretes Intervall handelt ist die Wsk. identisch)  
-            rnd = random.randint(0,3)
-            current_state[0]  =  current_state[0] + best_action.costs[rnd][0]
-            current_state[1]  =  current_state[1] + best_action.costs[rnd][1]
-        return v_stern, pi_stern
-    
 
     def select_best_action(self,state,timestep):
         incidence = state[0]
@@ -128,7 +109,8 @@ class Backwards_DP:
                 for succ in succ_set:
 
                     #current_cost += action.p * self.states[0][50][101]
-                    current_cost += action.p * self.states[timestep+1][succ[0]][succ[1]]
+                    #current_cost += action.p * self.states[timestep+1][succ[0]][succ[1]]
+                    current_cost += action.p * (incidence+self.states[timestep-1][succ[0]][succ[1]].expected_value)
                 
                 if min_action_cost == None or current_cost < min_action_cost:
                     min_action_cost = current_cost
@@ -227,6 +209,7 @@ class Backwards_DP:
         ax.set_title('Terminal Cost at T: '+ str(self.steps-1) + ' ; Reelection Prob: ' + str(self.reelection_prop))
         ax.set_xlim(0,501)
         ax.set_ylim(0,101)
+        
         color_gradient = self.get_color_gradient("#0cad24","#fc0303",1301)
         for incidence in range(501): 
             for popularity in range(101):
@@ -261,6 +244,7 @@ class Backwards_DP:
         fig.savefig(".\\Results\\State_"+str(self.succ_states[0][0].incidence)+"_"+str(self.succ_states[0][0].popularity)+"_Figure_"+str(self.steps-1)+"_Expected_Cost.png")
         
         for timestep in range(self.steps-1):
+            #color_gradient = self.get_color_gradient("#0cad24","#fc0303",801+(self.steps-timestep)*500)
             print("Plotting Step: " + str(timestep))
             fig, ax = plt.subplots()
             ax.set_xlabel('Incidence')
@@ -286,6 +270,11 @@ class Backwards_DP:
                 x = [visited.incidence,visited.incidence +1]
                 y = [visited.popularity +1,visited.popularity]
                 ax.plot(x,y,"black")
+            
+            first_patch = mpatches.Patch(color="#0cad24", label="Expected Cost of 0")
+            second_patch = mpatches.Patch(color="#fc0303", label="Expected Cost of 1300")
+
+            plt.legend(handles=[first_patch, second_patch],loc="upper right")
 
             fig.savefig(".\\Results\\State_"+str(self.succ_states[0][0].incidence)+"_"+str(self.succ_states[0][0].popularity)+"_Figure_"+str(timestep)+"_Expected_Cost.png")
         
