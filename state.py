@@ -3,5 +3,4 @@ class State:
         self.expected_value = expected_value
         self.best_action = best_action
         self.popularity = popularity
-        self.incidence = incidence
-        
+        self.incidence = incidence        

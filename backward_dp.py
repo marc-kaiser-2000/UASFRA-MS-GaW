@@ -14,7 +14,7 @@ class Backwards_DP:
         self.create_states()
         self.calc_expected_cost()
         self.reelection_prop = 0
-        #print(self.states)
+        
         
 
     def create_states(self):
@@ -65,9 +65,6 @@ class Backwards_DP:
                         current_cost = 0
                         for succ in succ_set:
 
-                            #current_cost += action.p * self.states[0][50][101]
-                            #current_cost += action.p * self.states[timestep-1][succ[0]][succ[1]].expected_value
-                            #Changed
                             current_cost += action.p * (incidence+self.states[timestep-1][succ[0]][succ[1]].expected_value)
 
                         if min_action_cost == None or current_cost < min_action_cost:

@@ -8,5 +8,3 @@ class Action:
 
     def print(self):
         print("ID: "+ str(self.id) + " Name: "+ self.name + ", ")
-
-
