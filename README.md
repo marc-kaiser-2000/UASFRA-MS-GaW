@@ -1,6 +1,6 @@
 # Backwards Dynamic Programming 
 
-This programm implements the Backwards Dynamic Programming Algorithm on a synthetic task. \\
+This programm implements the Backwards Dynamic Programming Algorithm on a synthetic task. \
 Given a president who has upcoming elections in $t = 8$ timesteps
 
 |   |   |   |   |   |
